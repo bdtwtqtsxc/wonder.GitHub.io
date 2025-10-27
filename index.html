@@ -19066,6 +19066,40 @@ try{window.db=db;}catch(e){}
   }
   try{window.db=window.db||window.db===undefined&&{};}catch(e){window.db={};}
 })();
+	<!-- 这是你网页底部原来的部分 -->
+<script>
+  // 原有的一些脚本逻辑
+  console.log("页面加载完成");
+</script>
+
+<!-- 👇 在这里插入新的脚本块 -->
+<script>
+(async () => {
+  // 等待数据库对象挂载到全局
+  let retry = 0;
+  while ((!window.db || !window.db.apiConfig) && retry < 30) {
+    await new Promise(r => setTimeout(r, 300));
+    retry++;
+  }
+
+  if (!window.db) {
+    console.error("数据库未初始化，无法读取 API 设置。");
+    return;
+  }
+
+  try {
+    const proxyUrl = await window.db.apiConfig.get("proxyUrl");
+    const apiKey   = await window.db.apiConfig.get("apiKey");
+    if (proxyUrl || apiKey) {
+      console.log("✅ 成功读取 API 设置:", { proxyUrl, apiKey });
+    } else {
+      console.warn("⚠️ 数据库中没有保存任何 API 设置。");
+    }
+  } catch (err) {
+    console.error("读取 API 设置时出错:", err);
+  }
+})();
+</script>
 </script>
 </body>
 </html>
